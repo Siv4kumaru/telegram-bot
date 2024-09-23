@@ -1,9 +1,10 @@
+from flask import Flask, redirect, url_for, render_template
 import asyncio
 from telegram import Bot
 from datetime import timedelta
 from telegram import Update
 from telegram.ext import Application ,ChatMemberHandler,CommandHandler, MessageHandler, CallbackContext,ContextTypes,filters
-
+app = Flask(__name__)
 
 
 
@@ -26,8 +27,25 @@ async def create_invite_link():
         member_limit=1  # Limit to only 1 user
     )
     print(f"Here is your one-member join link (expires in 10 seconds): {link.invite_link}") 
+    return link.invite_link
 # Create the invite link
 
+@app.route('/')
+def index():
+    # Serve the HTML with the button
+    return render_template('index.html')
+
+@app.route('/get-invite')
+def get_invite():
+    # Run the async function and get the invite link
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    invite_link = loop.run_until_complete(create_invite_link())
+    return redirect(invite_link)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # Output the join link
 
@@ -35,5 +53,4 @@ async def create_invite_link():
 async def main():
     await create_invite_link()
 
-# Run the async function
-asyncio.run(main())
+

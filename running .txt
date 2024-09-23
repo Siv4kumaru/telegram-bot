@@ -1,0 +1,3 @@
+python -m flask --app link.py run --host=0.0.0.0
+
+ipv4 adress : 192.168.29.1
