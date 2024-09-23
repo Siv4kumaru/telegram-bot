@@ -1,11 +1,12 @@
 from telegram import Update, ChatMemberUpdated
 from telegram.ext import Application ,ChatMemberHandler,CommandHandler, MessageHandler, CallbackContext,ContextTypes,filters
 from typing import Optional, Tuple
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,timezone
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.exc import IntegrityError
 from db import User
+
 
 DATABASE_URL = 'sqlite:///example.db'
 engine = create_engine(DATABASE_URL)
@@ -48,6 +49,15 @@ async def startu(newmem: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE) 
         first_name = user[i].first_name
         last_name = user[i].last_name
         date_joined = new_members.message.date
+        def get_time_in_ist(utctime: datetime) -> datetime:
+        
+            
+            # IST is UTC + 5 hours 30 minutes
+            ist_offset = timedelta(hours=5, minutes=30)
+            
+            # Return IST time as a datetime object
+            return utctime + ist_offset
+        date_joined = get_time_in_ist(date_joined)
 
 
         # Print user information
@@ -69,7 +79,7 @@ async def startu(newmem: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE) 
                 date=date_joined
             )
 
-        session.add(new_user)
+            session.add(new_user)
         try:
             session.commit()
             print(f"Inserted {userId} into the database.")
@@ -97,7 +107,8 @@ async def startu(newmem: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE) 
 
 
 async def kick(update: Update, context: CallbackContext):
-    await context.bot.ban_chat_member(chat_id=-1002338444521, user_id=1265311417)
+    await context.bot.ban_chat_member(chat_id=-1002338444521, user_id=1048272535)
+    await context.bot.unban_chat_member(chat_id=-1002338444521, user_id=1048272535)
     print(f"Kicked ")
 
 def main() -> None:

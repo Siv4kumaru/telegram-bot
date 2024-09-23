@@ -18,6 +18,7 @@ class User(Base):
     last_name = Column(String)
     date = Column(DateTime)
 
+
     # Create the database and the table
     # Create a session (optional, can be used later for data manipulation)
     Session = sessionmaker(bind=engine)
