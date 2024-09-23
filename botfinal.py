@@ -7,14 +7,16 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.exc import IntegrityError
 from db import User
 
+DATABASE_URL = 'sqlite:///example.db'
+engine = create_engine(DATABASE_URL)
+
+
 # async def start(update: Update, context: CallbackContext):
 
 #     await context.bot.send_message(chat_id=update.effective_user.id, text="Welcome to the group!")
 
 # async def user_created(upup : ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE):
 #     print(upup)
-DATABASE_URL = 'sqlite:///example.db'
-engine = create_engine(DATABASE_URL)
 
 
 async def start(update:ChatMemberUpdated, context: CallbackContext):
@@ -40,20 +42,27 @@ async def startu(newmem: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE) 
 
         # Print user information
         print(f"UserName: {username}, FirstName: {first_name}, LastName: {last_name}, Date: {date_joined}")
-        
-        new_user = User(
-            userid=userId,
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-            date=date_joined
-        )
-        # if session.filter(User.userid==userId):
-        #     print("User already exists")
+        existing_user = session.query(User).filter(User.userid == userId).first()
+
+        if existing_user:
+            print(f"{userId} already exists in the database. Updating user information.")
+            existing_user.username = username
+            existing_user.first_name = first_name
+            existing_user.last_name = last_name
+            existing_user.date = date_joined
+        else:
+            new_user = User(
+                userid=userId,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                date=date_joined
+            )
+
         session.add(new_user)
         try:
             session.commit()
-            print(f"Inserted {username} into the database.")
+            print(f"Inserted {userId} into the database.")
         except IntegrityError:
             session.rollback()
             print(f"User {username} already exists in the database.")
