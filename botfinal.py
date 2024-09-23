@@ -1,7 +1,7 @@
 from telegram import Update, ChatMemberUpdated
 from telegram.ext import Application ,ChatMemberHandler,CommandHandler, MessageHandler, CallbackContext,ContextTypes,filters
 from typing import Optional, Tuple
-from datetime import datetime
+from datetime import datetime,timedelta
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.exc import IntegrityError
@@ -19,8 +19,18 @@ engine = create_engine(DATABASE_URL)
 #     print(upup)
 
 
-async def start(update:ChatMemberUpdated, context: CallbackContext):
-    print(update.message.date)
+async def start(update:Update, context: CallbackContext):
+    print(update.message.chat.id)
+    expire_time = timedelta(seconds=10)
+    expire_date = datetime.now() + expire_time
+    
+    # Create the invite link with expiration and member limit
+    link= await context.bot.create_chat_invite_link(
+        chat_id=-1002338444521, 
+        expire_date=expire_date,  # Set None for unlimited or a specific expiration timestamp
+        member_limit=1  # Limit to only 1 user
+    )
+    print(f"Here is your one-member join link (expires in 10 seconds): {link.invite_link}") 
 
 async def startu(newmem: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE) -> None:
     new_members = newmem
