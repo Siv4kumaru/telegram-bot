@@ -5,43 +5,18 @@ from telegram.ext import Application, CommandHandler, MessageHandler, CallbackCo
 Token: Final = "7334795697:AAEm1EATo2oxKU_vxCOcwqge91EsybSUalE"
 Bot_username: Final = "@Batista123bot"
 
+
+async def mem(update: Update, context: CallbackContext):
+    member=context.bot.get_chat_member(update.message.chat.id, update.message.from_user.id)
+    await print(f'{member.user.first_name} joined the chat')
+     
+
 async def start(update: Update, context: CallbackContext):
     await update.message.reply_text("Batista Boom💥")
     
 async def bomb(update: Update, context: CallbackContext):
     await update.message.reply_text("Batista bOOOOOOOM")
 
-async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Check if the user has permission to kick members
-    admin_status = await update.effective_chat.get_member(update.effective_user.id)
-    
-    if admin_status.status not in ['administrator', 'creator']:
-        await update.message.reply_text("You don't have permission to kick members.")
-        return
-
-    
-    print(update.effective_chat)
-    if context.args:
-        username = context.args[0].lstrip('@')  # Remove the '@' if present
-
-        
-        try:
-            # Try to get the member by username
-            member_status = await update.effective_chat.get_member(username)
-            
-            print(member_status)
-            user_id = member_status.user.id
-            print(user_id)
-            print(update.effective_chat)
-            
-            # Kick the member
-            await update.effective_chat.kick_member(user_id)
-            await update.message.reply_text(f"Kicked {username} from the group.")
-        
-        except Exception as e:
-            await update.message.reply_text(f"Failed to kick {username}: {str(e)}")
-    else:
-        await update.message.reply_text("Please provide a username to kick.")
 
 def handle_response(text: str)->str:
     processed: str = text.lower()
@@ -88,7 +63,7 @@ if __name__ == "__main__":
     app = Application.builder().token(Token).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("bomb", bomb))
-    app.add_handler(CommandHandler("kick", kick))
+    app.add_handler(CommandHandler("mem",))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_error_handler(error)
     
