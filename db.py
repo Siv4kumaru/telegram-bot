@@ -17,6 +17,7 @@ class User(Base):
     first_name = Column(String)
     last_name = Column(String)
     date = Column(DateTime)
+    active = Column(Integer,default=1)
 
 
     # Create the database and the table
