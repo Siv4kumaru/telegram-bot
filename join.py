@@ -1,9 +1,8 @@
 from telegram import Update, ChatMemberUpdated
-from telegram.ext import Application ,ChatMemberHandler,CommandHandler, MessageHandler, CallbackContext,ContextTypes,filters
-from typing import Optional, Tuple
-from datetime import datetime,timedelta,timezone
+from telegram.ext import Application ,CommandHandler, MessageHandler, CallbackContext,ContextTypes,filters
+from datetime import datetime,timedelta
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
 from db import User
 
@@ -70,6 +69,7 @@ async def startu(newmem: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE) 
             existing_user.first_name = first_name
             existing_user.last_name = last_name
             existing_user.date = date_joined
+            existing_user.active = 1
         else:
             new_user = User(
                 userid=userId,
